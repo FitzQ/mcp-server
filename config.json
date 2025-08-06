@@ -1,5 +1,5 @@
 {
-	"name":	"sysmodule",
+	"name":	"mcp-server",
 	"version":	"1.0.0",
 	"program_id":	"0x010000000000B1C0",
 	"program_id_range_min":	"0x010000000000B1C0",

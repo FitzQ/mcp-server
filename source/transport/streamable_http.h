@@ -22,13 +22,6 @@ typedef struct {
     char *id;    // 事件 ID
 } SSEvent;
 
-static int listen_fd = -1;
-static char session_id[40] = {0};
-// static char protocol_version[32] = "2024-11-05";
-
-static char protocol_version[32] = "2025-03-26";
-
-// static char protocol_version[32] = "2025-06-18";
 char *get_header(char *req, char *key);
 Result add_sse_connection(int client_fd, char *Mcp_Session_Id, char *Last_Event_ID);
 void handle_http_request(char *req, int req_len, int client_fd);

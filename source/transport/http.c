@@ -1,5 +1,8 @@
 #include "streamable_http.h"
 
+static char protocol_version[32] = "2025-06-18";
+static char session_id[40] = {0};
+
 // 生成随机 session id
 void gen_session_id(char *buf, int len) {
     for (int i = 0; i < len-1; ++i) {

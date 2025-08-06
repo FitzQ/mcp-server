@@ -7,6 +7,7 @@
 static Thread worker_threads[WORKER_COUNT];
 static int worker_client_fd[WORKER_COUNT];
 static volatile int worker_busy[WORKER_COUNT];
+static int listen_fd = -1;
 
 Result socket_init() {
     struct sockaddr_in addr;
@@ -56,7 +57,7 @@ char *get_header(char *req, char *key) {
 }
 
 void worker_func(void* arg) {
-    int idx = (int)arg;
+    int idx = (int)(intptr_t)arg;
     while (1) {
         if (!worker_busy[idx]) {
             svcSleepThread(1000000ULL); // 1ms
@@ -87,7 +88,7 @@ void run(void* arg) {
     for (int i = 0; i < WORKER_COUNT; ++i) {
         worker_busy[i] = 0;
         worker_client_fd[i] = -1;
-        Result rs = threadCreate(&worker_threads[i], worker_func, (void*)i, NULL, 0x10000, 49, -2);
+        Result rs = threadCreate(&worker_threads[i], worker_func, (void*)(intptr_t)i, NULL, 0x10000, 49, -2);
         if (R_FAILED(rs)) {
             log_error("Failed to create worker thread %d (%x)", i, rs);
             return;
@@ -154,4 +155,5 @@ Result streamable_http_init() {
         log_error("Failed to start notification thread for streamable_http (%x)", rs);
         return rs;
     }
+    return 0;
 }

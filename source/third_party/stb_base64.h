@@ -34,29 +34,5 @@ static int stb_base64_encode(const unsigned char *data, size_t len, char *out)
     return (int)j;
 }
 
-static int stb_base64_decode(const char *src, unsigned char *out, size_t *outlen)
-{
-    int dtable[256], i, j, k;
-    size_t len = 0;
-    for (i = 0; i < 256; ++i) dtable[i] = -1;
-    for (i = 0; i < 64; ++i) dtable[(unsigned char)stb_b64_table[i]] = i;
-    for (i = 0; src[i]; ++i) {
-        if (src[i] == '=') break;
-        if (dtable[(unsigned char)src[i]] == -1) continue;
-        ++len;
-    }
-    k = 0;
-    for (i = 0; src[i]; ) {
-        int a = src[i] == '=' ? 0 : dtable[(unsigned char)src[i++]];
-        int b = src[i] == '=' ? 0 : dtable[(unsigned char)src[i++]];
-        int c = src[i] == '=' ? 0 : dtable[(unsigned char)src[i++]];
-        int d = src[i] == '=' ? 0 : dtable[(unsigned char)src[i++]];
-        out[k++] = (a << 2) | (b >> 4);
-        if (src[i-2] != '=') out[k++] = (b << 4) | (c >> 2);
-        if (src[i-1] != '=') out[k++] = (c << 6) | d;
-    }
-    if (outlen) *outlen = k;
-    return 0;
-}
 
 #endif // STB_BASE64_H
