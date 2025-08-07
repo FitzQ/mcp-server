@@ -29,7 +29,7 @@
       "servers": {
         "switch-mcp-server": {
           "type": "streamableHttp",
-          "url": "http://{你的switch ip}:12345/mcp",
+          "url": "http://{你的switch ip}:12345/mcp"
         }
       }
     }
