@@ -23,6 +23,17 @@
 
 1. 将 `out/atmosphere/contents/010000000000B1C0` 目录下的内容复制到你的 Switch SD 卡`/atmosphere/contents`目录下。
 2. 开关位置：Hekate Toolbox -> 后台服务 -> mcp-server
+3. mcp客户端连接配置
+    ```json
+    {
+      "servers": {
+        "switch-mcp-server": {
+          "type": "streamableHttp",
+          "url": "http://{你的switch ip}:12345/mcp",
+        }
+      }
+    }
+    ```
 
 ## 当前已知问题
 
