@@ -47,8 +47,12 @@ int list_controller(cJSON *tools)
         "        \"type\": \"object\",\n"
         "        \"properties\": {\n"
         "            \"buttons\": {\n"
-        "                \"type\": \"number\",\n"
-        "                \"description\": \"Button bitmask，支持以下名称及对应值：\\nA=0x00000001, B=0x00000002, X=0x00000004, Y=0x00000008,\\nLSTICK=0x00000010, RSTICK=0x00000020,\\nL=0x00000040, R=0x00000080, ZL=0x00000100, ZR=0x00000200,\\nPLUS=0x00000400, MINUS=0x00000800,\\nDPAD_LEFT=0x00001000, DPAD_UP=0x00002000, DPAD_RIGHT=0x00004000, DPAD_DOWN=0x00008000,\\nHOME=0x00010000, CAPTURE=0x00020000\\n可用十六进制或十进制 bitmask 组合多个按钮。\"\n"
+        "                \"type\": \"array\",\n"
+        "                \"items\": {\n"
+        "                    \"enum\": [\"A\", \"B\", \"X\", \"Y\", \"LSTICK\", \"RSTICK\", \"L\", \"R\", \"ZL\", \"ZR\", \"PLUS\", \"MINUS\", \"LEFT\", \"UP\", \"RIGHT\", \"DOWN\", \"HOME\", \"CAPTURE\"],\n"
+        "                    \"type\": \"string\"\n"
+        "                },\n"
+        "                \"description\": \"按钮。\"\n"
         "            },\n"
         "            \"analog_stick_lx\": {\n"
         "                \"type\": \"number\",\n"
@@ -116,8 +120,31 @@ int call_controller(cJSON *content, const cJSON *arguments)
 
     // 按照 inputSchema 直接读取各属性
     const cJSON *buttons = cJSON_GetObjectItem(arguments, "buttons");
-    if (buttons && cJSON_IsNumber(buttons)) {
-        args.buttons = (u64)buttons->valuedouble;
+    if (buttons && cJSON_IsArray(buttons)) {
+        cJSON *button = NULL;
+        cJSON_ArrayForEach(button, buttons) {
+            if (cJSON_IsString(button)) {
+                const char *button_name = button->valuestring;
+                if (strcmp(button_name, "A") == 0) args.buttons |= HidNpadButton_A;
+                else if (strcmp(button_name, "B") == 0) args.buttons |= HidNpadButton_B;
+                else if (strcmp(button_name, "X") == 0) args.buttons |= HidNpadButton_X;
+                else if (strcmp(button_name, "Y") == 0) args.buttons |= HidNpadButton_Y;
+                else if (strcmp(button_name, "LSTICK") == 0) args.buttons |= HidNpadButton_StickL;
+                else if (strcmp(button_name, "RSTICK") == 0) args.buttons |= HidNpadButton_StickR;
+                else if (strcmp(button_name, "L") == 0) args.buttons |= HidNpadButton_L;
+                else if (strcmp(button_name, "R") == 0) args.buttons |= HidNpadButton_R;
+                else if (strcmp(button_name, "ZL") == 0) args.buttons |= HidNpadButton_ZL;
+                else if (strcmp(button_name, "ZR") == 0) args.buttons |= HidNpadButton_ZR;
+                else if (strcmp(button_name, "PLUS") == 0) args.buttons |= HidNpadButton_Plus;
+                else if (strcmp(button_name, "MINUS") == 0) args.buttons |= HidNpadButton_Minus;
+                else if (strcmp(button_name, "LEFT") == 0) args.buttons |= HidNpadButton_Left;
+                else if (strcmp(button_name, "UP") == 0) args.buttons |= HidNpadButton_Up;
+                else if (strcmp(button_name, "RIGHT") == 0) args.buttons |= HidNpadButton_Right;
+                else if (strcmp(button_name, "DOWN") == 0) args.buttons |= HidNpadButton_Down;
+                else if (strcmp(button_name, "HOME") == 0) args.buttons |= HiddbgNpadButton_Home;
+                else if (strcmp(button_name, "CAPTURE") == 0) args.buttons |= HiddbgNpadButton_Capture;
+            }
+        }
         has_any = 1;
     }
     const cJSON *lx = cJSON_GetObjectItem(arguments, "analog_stick_lx");

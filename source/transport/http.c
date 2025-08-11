@@ -1,4 +1,5 @@
 #include "streamable_http.h"
+#include "../tools/controller_recorder.h"
 
 static char protocol_version[32] = "2025-06-18";
 static char session_id[40] = {0};
@@ -97,8 +98,8 @@ void handle_http_request(char *req, int req_len, int client_fd) {
         cJSON *caps = cJSON_CreateObject();
         
         // logging 能力
-        cJSON *logging = cJSON_CreateObject();
-        cJSON_AddItemToObject(caps, "logging", logging);
+        // cJSON *logging = cJSON_CreateObject();
+        // cJSON_AddItemToObject(caps, "logging", logging);
         
         // prompts 能力
         // cJSON *prompts = cJSON_CreateObject();
@@ -210,10 +211,12 @@ void handle_http_request(char *req, int req_len, int client_fd) {
         cJSON *result = cJSON_CreateObject();
         cJSON *tools = cJSON_CreateArray();
         
-        // controller 工具
-        list_controller(tools);
-        // cur_frame 工具
-        list_cur_frame(tools);
+    // controller 工具
+    list_controller(tools);
+    // cur_frame 工具
+    list_cur_frame(tools);
+    // controller_recorder 工具
+    list_controller_recorder(tools);
         
         cJSON_AddItemToObject(result, "tools", tools);
         // cJSON_AddStringToObject(result, "nextCursor", "");
@@ -247,6 +250,8 @@ void handle_http_request(char *req, int req_len, int client_fd) {
             isError = call_controller(content, arguments);
         } else if (tool_name && cJSON_IsString(tool_name) && strcmp(tool_name->valuestring, "cur_frame") == 0) {
             isError = call_cur_frame(content);
+        } else if (tool_name && cJSON_IsString(tool_name) && strcmp(tool_name->valuestring, "controller_recorder") == 0 && arguments) {
+            isError = call_controller_recorder(content, arguments);
         } else {
             isError = 1;
             cJSON *item = cJSON_CreateObject();

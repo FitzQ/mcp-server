@@ -101,7 +101,6 @@ void run(void* arg) {
     }
     while (1) {
         if (listen_fd < 0 && R_FAILED(socket_init())) {
-            log_error("Failed to initialize socket");
             svcSleepThread(10000000ULL); // 10ms
             continue;
         }
